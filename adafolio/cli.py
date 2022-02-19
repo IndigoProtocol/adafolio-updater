@@ -1,3 +1,5 @@
+import json
+
 import click
 import requests
 
@@ -46,3 +48,15 @@ def cspa():
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
         print(member.ticker)
+
+
+@folio.command()
+@click.argument("portfolio")
+def update_cspa(portfolio):
+    """Prints out JSON required to update members to all members of the
+    CSPA."""
+    p = adafolio.portfolio.Portfolio(portfolio)
+    print(json.dumps(
+        p.update_members(adafolio.cspa.get_members()),
+        indent=4
+    ))
