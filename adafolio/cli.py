@@ -16,7 +16,7 @@ def folio():
 def members(portfolio):
     """Lists all the members of an adafolio portfolio."""
     for member in adafolio.portfolio.get_members(portfolio):
-        print(member)
+        print(member.ticker)
 
 
 @folio.command()
@@ -30,19 +30,19 @@ def diff(portfolio):
     print("To remove:")
 
     for member in adafolio_members:
-        if member not in cspa_members:
-            print(member)
+        if member.pool_id not in (m.pool_id for m in cspa_members):
+            print(member.ticker)
 
     print()
     print("To add:")
 
     for member in cspa_members:
-        if member not in adafolio_members:
-            print(member)
+        if member.pool_id not in (m.pool_id for m in adafolio_members):
+            print(member.ticker)
 
 
 @folio.command()
 def cspa():
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
-        print(member)
+        print(member.ticker)
