@@ -1,0 +1,9 @@
+*.egg-info
+*.pyc
+*.pyd
+*.pyo
+.*
+__pycache__
+Dockerfile
+LICENSE
+venv
