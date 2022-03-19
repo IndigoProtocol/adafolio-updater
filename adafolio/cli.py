@@ -52,11 +52,18 @@ def cspa():
 
 @folio.command()
 @click.argument("portfolio")
-def update_cspa(portfolio):
+@click.option("--api-key", help="Your adafolio API key")
+def update_cspa(portfolio, api_key):
     """Prints out JSON required to update members to all members of the
-    CSPA."""
+    CSPA. If API key is provided then submits the request automatically."""
     p = adafolio.portfolio.Portfolio(portfolio)
-    print(json.dumps(
-        p.update_members(adafolio.cspa.get_members()),
-        indent=4
-    ))
+    updated_portfolio = p.update_members(adafolio.cspa.get_members())
+
+    if api_key:
+        updated_portfolio = requests.post(
+            "https://api.adafolio.com/create-portfolio",
+            json=updated_portfolio,
+            headers={"API-KEY": api_key}
+        ).json()
+
+    print(json.dumps(updated_portfolio,indent=4))
