@@ -18,12 +18,21 @@ def folio():
     pass
 
 
+def _print_member(member, show_ticker):
+    if show_ticker:
+        print(member.ticker)
+
+    else:
+        print(member.member_id)
+
+
 @folio.command()
 @click.argument("portfolio")
-def members(portfolio):
+@click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
+def members(portfolio, tickers):
     """Lists all the members of an adafolio portfolio."""
     for member in adafolio.portfolio.get_members(portfolio):
-        print(member)
+        _print_member(member, tickers)
 
 
 @folio.command()
@@ -48,20 +57,21 @@ def diff(portfolio):
             print(member)
 
 
-@folio.command()
-def cspa():
+@click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
+def cspa(tickers):
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
-        print(member)
+        _print_member(member, tickers)
 
 
 @folio.command()
-def high_performance_cspa():
+@click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
+def high_performance_cspa(tickers):
     """Lists all the members in the CSPA that are high performers."""
     high_performance_members = adafolio.portfolio.get_members(HIGH_PERFORMERS)
     for member in adafolio.cspa.get_members():
         if member in high_performance_members:
-            print(member)
+            _print_member(member, tickers)
 
 
 @folio.command()
