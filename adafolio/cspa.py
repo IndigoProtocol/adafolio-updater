@@ -1,5 +1,6 @@
 import requests
 
+from adafolio.member import Member
 from adafolio.Pool import Pool
 
 
@@ -9,6 +10,6 @@ CSPA_MEMBER_LIST = "https://raw.githubusercontent.com/SinglePoolAlliance/Registr
 def get_members():
     """Gets a list of all the members in the CSPA."""
     return [
-        Pool(member["poolId"].strip(), member["ticker"].upper().strip())
+        Member(member["poolId"], member["ticker"])
         for member in requests.get(CSPA_MEMBER_LIST).json()
     ]

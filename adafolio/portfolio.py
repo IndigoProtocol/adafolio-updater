@@ -1,5 +1,6 @@
 import requests
 
+from adafolio.member import Member
 from adafolio.Pool import Pool
 
 
@@ -10,21 +11,32 @@ class Portfolio:
     def __init__(self, portfolio):
         self._portfolio_id = portfolio
         self._data = requests.get(ADAFOLIO_PORTFOLIO_URL + portfolio).json()
-
-    @property
-    def members(self):
-        return [
-            Pool(pool["pool_id"].strip(), pool["ticker"].upper().strip())
+        self._members = [
+            Member(pool["pool_id"], pool["ticker"])
             for pool in self._data["pools"]
         ]
 
-    def update_members(self, members):
+    @property
+    def members(self):
+        return self._members
+
+    @property
+    def json(self):
         return {
             "description": self._data["description"],
             "id": self._portfolio_id,
             "name": self._data["name"],
-            "pools": [{"id": member.pool_id} for member in members]
+            "pools": [
+                member.member_id for member in self._members
+            ]
         }
+
+    def update_members(self, members):
+        for member in members:
+            if not type(member) == Member:
+                raise ValueError("members must be a list of Member instances")
+
+        self._members = members
 
 
 def get_members(portfolio):

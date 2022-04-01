@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 
 import click
 import requests
@@ -21,7 +23,7 @@ def folio():
 def members(portfolio):
     """Lists all the members of an adafolio portfolio."""
     for member in adafolio.portfolio.get_members(portfolio):
-        print(member.ticker)
+        print(member)
 
 
 @folio.command()
@@ -36,21 +38,21 @@ def diff(portfolio):
 
     for member in adafolio_members:
         if member.pool_id not in (m.pool_id for m in cspa_members):
-            print(member.ticker)
+            print(member)
 
     print()
     print("To add:")
 
     for member in cspa_members:
         if member.pool_id not in (m.pool_id for m in adafolio_members):
-            print(member.ticker)
+            print(member)
 
 
 @folio.command()
 def cspa():
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
-        print(member.ticker)
+        print(member)
 
 
 @folio.command()
@@ -59,7 +61,7 @@ def high_performance_cspa():
     high_performance_members = adafolio.portfolio.get_members(HIGH_PERFORMERS)
     for member in adafolio.cspa.get_members():
         if member in high_performance_members:
-            print(member.ticker)
+            print(member)
 
 
 @folio.command()
