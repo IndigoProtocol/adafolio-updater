@@ -36,27 +36,6 @@ def members(portfolio, tickers):
 
 
 @folio.command()
-@click.argument("portfolio")
-def diff(portfolio):
-    """Lists all the differences between the given adafolio portfolio and the
-    CSPA members."""
-    cspa_members = adafolio.cspa.get_members()
-    adafolio_members = adafolio.portfolio.get_members(portfolio)
-
-    print("To remove:")
-
-    for member in adafolio_members:
-        if member.pool_id not in (m.pool_id for m in cspa_members):
-            print(member)
-
-    print()
-    print("To add:")
-
-    for member in cspa_members:
-        if member.pool_id not in (m.pool_id for m in adafolio_members):
-            print(member)
-
-
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
 def cspa(tickers):
     """Lists all the members in the CSPA."""
