@@ -27,7 +27,8 @@ class Portfolio:
             "id": self._portfolio_id,
             "name": self._data["name"],
             "pools": [
-                member.member_id for member in self._members
+                {"id": member.member_id}
+                for member in self._members
             ]
         }
 

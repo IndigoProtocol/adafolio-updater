@@ -5,7 +5,7 @@ MEMBER_ID_LENGTH = 56
 
 
 class Member:
-    def __init__(self, member_id, ticker):
+    def __init__(self, member_id, ticker=""):
         if not member_id or not member_id.strip():
             raise ValueError("member_id must be set")
 

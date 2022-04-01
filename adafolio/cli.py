@@ -5,6 +5,7 @@ import sys
 import click
 import requests
 
+from adafolio.member import Member
 import adafolio.cspa
 import adafolio.portfolio
 
@@ -56,17 +57,27 @@ def high_performance_cspa(tickers):
 @folio.command()
 @click.argument("portfolio")
 @click.option("--api-key", help="Your adafolio API key")
-def update_cspa(portfolio, api_key):
-    """Prints out JSON required to update members to all members of the
-    CSPA. If API key is provided then submits the request automatically."""
-    p = adafolio.portfolio.Portfolio(portfolio)
-    updated_portfolio = p.update_members(adafolio.cspa.get_members())
+@click.argument("members", type=click.File("r"), default=sys.stdin)
+def update(portfolio, api_key, members):
+    """Updates a portfolio with a list of members.
+    """
+    with members as m:
+        members = m.read().splitlines()
 
-    if api_key:
-        updated_portfolio = requests.post(
-            "https://api.adafolio.com/create-portfolio",
-            json=updated_portfolio,
-            headers={"API-KEY": api_key}
-        ).json()
+    members = [Member(member) for member in members]
 
-    print(json.dumps(updated_portfolio,indent=4))
+    if not api_key:
+        try:
+            api_key = os.environ["ADAFOLIO_API_KEY"]
+
+        except KeyError:
+            raise click.UsageError("adafolio API key must be provided")
+
+    portfolio = adafolio.portfolio.Portfolio(portfolio)
+    portfolio.update_members(members)
+
+    print(json.dumps(requests.post(
+        "https://api.adafolio.com/create-portfolio",
+        json=portfolio.json,
+        headers={"API-KEY": api_key}
+    ).json(), indent=4))
