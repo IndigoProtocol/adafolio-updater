@@ -7,6 +7,9 @@ import adafolio.cspa
 import adafolio.portfolio
 
 
+HIGH_PERFORMERS = "84a2d806-fe0f-11ea-befd-a45e60be653b"
+
+
 @click.group()
 def folio():
     """A simple interface for managing adafolio lists."""
@@ -48,6 +51,15 @@ def cspa():
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
         print(member.ticker)
+
+
+@folio.command()
+def high_performance_cspa():
+    """Lists all the members in the CSPA that are high performers."""
+    high_performance_members = adafolio.portfolio.get_members(HIGH_PERFORMERS)
+    for member in adafolio.cspa.get_members():
+        if member in high_performance_members:
+            print(member.ticker)
 
 
 @folio.command()
