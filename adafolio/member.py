@@ -1,12 +1,19 @@
 import re
 
 
+MEMBER_ID_LENGTH = 56
+
+
 class Member:
     def __init__(self, member_id, ticker):
         if not member_id or not member_id.strip():
             raise ValueError("member_id must be set")
 
-        self._member_id = member_id.strip()
+        member_id = member_id.strip()
+        if len(member_id) != MEMBER_ID_LENGTH:
+            raise ValueError("member_id is invalid", member_id)
+
+        self._member_id = member_id
 
         self._ticker = ""
         if ticker:
