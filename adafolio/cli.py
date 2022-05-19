@@ -10,6 +10,7 @@ import adafolio.cspa
 import adafolio.portfolio
 
 
+ASPA = "10e9fb44-a712-11ec-b375-0242ac190002"
 HIGH_PERFORMERS = "84a2d806-fe0f-11ea-befd-a45e60be653b"
 
 
@@ -42,6 +43,24 @@ def cspa(tickers):
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
         _print_member(member, tickers)
+
+
+@folio.command()
+@click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
+def aspa(tickers):
+    """Lists all the members in the ASPA."""
+    for member in adafolio.portfolio.get_members(ASPA):
+        _print_member(member, tickers)
+
+
+@folio.command()
+@click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
+def cspa_aspa(tickers):
+    """Lists all the members in both the CSPA and ASPA."""
+    aspa_members = adafolio.portfolio.get_members(ASPA)
+    for member in adafolio.cspa.get_members():
+        if member in aspa_members:
+            _print_member(member, tickers)
 
 
 @folio.command()
