@@ -1,12 +1,11 @@
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
 
 with open("requirements.txt", "r") as fh:
-   requirements = fh.readlines()
+    requirements = fh.readlines()
 
 
 setup(
@@ -22,8 +21,8 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     entry_points={
-        'console_scripts': [
-            'folio=adafolio.cli:folio',
+        "console_scripts": [
+            "folio=adafolio.cli:folio",
         ],
     },
 )

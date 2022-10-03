@@ -1,0 +1,6 @@
+[flake8]
+exclude =
+    .mypy_cache
+    .pytest_cache
+    build
+    venv

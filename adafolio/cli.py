@@ -1,26 +1,26 @@
 import json
 import os
 import sys
+from io import TextIOWrapper
 
 import click
 import requests
 
-from adafolio.member import Member
 import adafolio.cspa
 import adafolio.portfolio
-
+from adafolio.member import Member
 
 ASPA = "10e9fb44-a712-11ec-b375-0242ac190002"
 HIGH_PERFORMERS = "84a2d806-fe0f-11ea-befd-a45e60be653b"
 
 
 @click.group()
-def folio():
+def folio() -> None:
     """A simple interface for managing adafolio lists."""
     pass
 
 
-def _print_member(member, show_ticker):
+def _print_member(member: Member, show_ticker: bool) -> None:
     if show_ticker:
         print(member.ticker)
 
@@ -31,7 +31,7 @@ def _print_member(member, show_ticker):
 @folio.command()
 @click.argument("portfolio")
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
-def members(portfolio, tickers):
+def members(portfolio: str, tickers: bool) -> None:
     """Lists all the members of an adafolio portfolio."""
     for member in adafolio.portfolio.get_members(portfolio):
         _print_member(member, tickers)
@@ -39,7 +39,7 @@ def members(portfolio, tickers):
 
 @folio.command()
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
-def cspa(tickers):
+def cspa(tickers: bool) -> None:
     """Lists all the members in the CSPA."""
     for member in adafolio.cspa.get_members():
         _print_member(member, tickers)
@@ -47,7 +47,7 @@ def cspa(tickers):
 
 @folio.command()
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
-def aspa(tickers):
+def aspa(tickers: bool) -> None:
     """Lists all the members in the ASPA."""
     for member in adafolio.portfolio.get_members(ASPA):
         _print_member(member, tickers)
@@ -55,7 +55,7 @@ def aspa(tickers):
 
 @folio.command()
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
-def cspa_aspa(tickers):
+def cspa_aspa(tickers: bool) -> None:
     """Lists all the members in both the CSPA and ASPA."""
     aspa_members = adafolio.portfolio.get_members(ASPA)
     for member in adafolio.cspa.get_members():
@@ -65,7 +65,7 @@ def cspa_aspa(tickers):
 
 @folio.command()
 @click.option("--tickers", "-t", is_flag=True, help="Show only tickers")
-def high_performance_cspa(tickers):
+def high_performance_cspa(tickers: bool) -> None:
     """Lists all the members in the CSPA that are high performers."""
     high_performance_members = adafolio.portfolio.get_members(HIGH_PERFORMERS)
     for member in adafolio.cspa.get_members():
@@ -77,13 +77,10 @@ def high_performance_cspa(tickers):
 @click.argument("portfolio")
 @click.option("--api-key", help="Your adafolio API key")
 @click.argument("members", type=click.File("r"), default=sys.stdin)
-def update(portfolio, api_key, members):
-    """Updates a portfolio with a list of members.
-    """
+def update(portfolio: str, api_key: str, members: TextIOWrapper) -> None:
+    """Updates a portfolio with a list of members."""
     with members as m:
-        members = m.read().splitlines()
-
-    members = [Member(member) for member in members]
+        members_list = [Member(member) for member in m.read().splitlines()]
 
     if not api_key:
         try:
@@ -92,11 +89,16 @@ def update(portfolio, api_key, members):
         except KeyError:
             raise click.UsageError("adafolio API key must be provided")
 
-    portfolio = adafolio.portfolio.Portfolio(portfolio)
-    portfolio.update_members(members)
+    portfolio_ins = adafolio.portfolio.Portfolio(portfolio)
+    portfolio_ins.update_members(members_list)
 
-    print(json.dumps(requests.post(
-        "https://api.adafolio.com/create-portfolio",
-        json=portfolio.json,
-        headers={"API-KEY": api_key}
-    ).json(), indent=4))
+    print(
+        json.dumps(
+            requests.post(
+                "https://api.adafolio.com/create-portfolio",
+                json=portfolio_ins.json,
+                headers={"API-KEY": api_key},
+            ).json(),
+            indent=4,
+        )
+    )

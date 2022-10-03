@@ -1,4 +1,6 @@
-from collections import namedtuple
+from typing import NamedTuple
 
 
-Pool = namedtuple("Pool", ["pool_id", "ticker"])
+class Pool(NamedTuple):
+    pool_id: str
+    ticker: str
